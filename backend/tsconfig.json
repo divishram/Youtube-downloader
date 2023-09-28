@@ -1,0 +1,43 @@
+// {
+//   "compilerOptions": {
+//     "lib": ["ES2016"],
+//     "module": "commonjs",
+//     "outDir": "dist",
+//     "sourceMap": true,
+//     "strict": true,
+//     "target": "ES2016"
+//   },
+//   "include": ["src"]
+// }
+
+{
+  "compilerOptions": {
+    "target": "ES2021",                  
+    "module": "CommonJS",                
+    "outDir": "dist",                    
+    "sourceMap": true,                  
+    "strict": true,                      
+    "noImplicitAny": true,               
+    "strictNullChecks": true,            
+    "noUnusedLocals": false,              
+    "noUnusedParameters": false,         
+    "noImplicitReturns": true,           
+    "noFallthroughCasesInSwitch": true,  
+    "allowSyntheticDefaultImports": true, 
+    "forceConsistentCasingInFileNames": true, 
+    "declaration": false,                 
+    "removeComments": false,              
+    "alwaysStrict": true,                
+    "noEmitOnError": true,               
+    "noImplicitThis": true,              
+    "esModuleInterop": true,             
+    "skipLibCheck": false,                
+    "listFiles": false,                  
+    "listEmittedFiles": false,           
+    "pretty": true                      
+  },
+  "include": ["src"],      /* Specify the files to include in compilation */
+  "exclude": [
+    "node_modules"                      /* Specify the files to exclude from compilation */
+  ]
+}
