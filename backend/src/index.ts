@@ -6,7 +6,6 @@ import cors from "cors";
 import { Server } from "socket.io";
 import path from "path";
 import bodyParser from "body-parser";
-import router from "./routes/router";
 import sanitizeHtml from "sanitize-html";
 // import validateYouTubeURL from "./utils/validURL";
 import { validateYouTubeURL, getVideoInfo } from "./utils/validURL";
@@ -41,8 +40,6 @@ app.use(express.static(path.join(__dirname, "../public")));
 //   logger.info("Info about server.");
 //   res.render("index");
 // });
-
-app.use("/", router);
 
 io.on("connection", (socket) => {
 
