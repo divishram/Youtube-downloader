@@ -7,12 +7,9 @@ import { Server } from "socket.io";
 import path from "path";
 import bodyParser from "body-parser";
 import sanitizeHtml from "sanitize-html";
-// import validateYouTubeURL from "./utils/validURL";
 import { validateYouTubeURL, getVideoInfo } from "./utils/validURL";
 import ytdl from "ytdl-core";
-// todo add mongo DB for list of downloads
 // todo add async to functions
-// todo use ts-node (i think maybe it can cause issues cause of diff engine, but just double check)
 
 dotenv.config();
 const PORT = process.env.PORT ?? 4000;
@@ -69,9 +66,6 @@ io.on("connection", (socket) => {
 
 
 server.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
-
-// todo add typescript start script in package.json
-
 /*
 ASYNC EXAMLPE
 app.get('/crypto', async (req, res) => {
