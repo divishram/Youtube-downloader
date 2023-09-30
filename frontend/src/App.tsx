@@ -31,25 +31,6 @@ function App() {
 
   }, []);
 
-  useEffect(() => {
-    let processing = true;
-    axiosFetchData(processing);
-    return () => {
-      processing = false;
-    };
-  }, []);
-
-  const axiosFetchData = async (processing: boolean) => {
-    await axios
-      .get("http://localhost:4000/random")
-      .then((res) => {
-        if (processing) {
-          console.log(res.data);
-        }
-      })
-      .catch((err) => console.error(err));
-  };
-
   return (
     <>
       <Nav></Nav>
