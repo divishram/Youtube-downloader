@@ -73,14 +73,43 @@ export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
   return result;
 }
 
-export const downloadAsAudio = async (url:string, title:string) => {
-  // let video = ytdl(url, {filter: "audioonly"});
-  ytdl(url, {filter: "audioonly"})
-    .pipe(fs.createWriteStream(`./${title}.m4a`))
-    .on("finish", () => console.log("Finished downloaded"))
-    .on("error", (err) => {
-      console.error(err);
-    })
+// export const downloadAsAudio = async (url:string, title:string) => {
+//   // let video = ytdl(url, {filter: "audioonly"});
+//   ytdl(url, {filter: "audioonly"})
+//     .pipe(fs.createWriteStream(`./${title}.m4a`))
+//     .on("finish", () => console.log("Finished downloaded"))
+//     .on("error", (err) => {
+//       console.error(err);
+//     })
+// }
+
+export const downloadFile = async (fileTypeToDownload:string, url:string, title:string) => {
+
+  if (fileTypeToDownload === "audio-m4a") {
+    ytdl(url, {filter: "audioonly"})
+      .pipe(fs.createWriteStream(`./${title}.m4a`))
+      .on("finish", () => console.log("Finished downloaded"))
+      .on("error", (err) => {
+        console.error(err);
+      })
+  }
+
+  if (fileTypeToDownload === "360p") {
+    ytdl.getInfo(url)
+      .then((info) => {
+        // const format = ytdl.chooseFormat(info.formats, {quality: "18"})
+        const choosenFormat = info.formats.find(format => format.itag === 18);
+        console.log(choosenFormat);
+        const videoStream = ytdl(url, {
+          format: choosenFormat
+        });
+        videoStream.pipe(fs.createWriteStream("./360p-video.mp4"));
+      })
+  }
+
+
+
+
 }
 
 getVideoInfo("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu")
@@ -102,7 +131,6 @@ ytdl.getInfo("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9
     .then((info) => {
       const qualityOptions = ["135"];
       const format = ytdl.chooseFormat(info.formats,  {quality: "highest"});
-      console.log(format);
     })
 }
 
