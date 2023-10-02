@@ -1,6 +1,4 @@
 import React, { useEffect } from "react";
-import { socket } from "../socket";
-import formatTime from "../utils/ConvertTime"
 
 interface VideoContentProps {
   data: {
@@ -11,10 +9,6 @@ interface VideoContentProps {
 }
 
 export default function VideoContent(props: VideoContentProps) {
-  useEffect(() => {
-    socket.emit("test", "world");
-  });
-
   return (
     <div>
       {props.data.img && (
