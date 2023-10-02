@@ -66,7 +66,7 @@
 
 .description {
   grid-area: description;
-  background-color: green;
+  background-color: #008000;
   text-align: center;
 }
 
@@ -74,6 +74,94 @@
   grid-area: url;
   margin: 10px 0 0 0;
   height: 30px;
-  border: 1px solid black;
+  border: 1px solid #000000;
   border-radius: 0.3em;
+}
+
+
+.flex-container-video {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0 0 0;
+}
+
+.row {
+  display: flex;
+  align-items: center; /* Vertically center content in each row */
+  justify-content: center; /* Horizontally center content in each row */
+  border: 1px solid #ccc; /* Optional: Add borders for visualization */
+}
+
+.row:nth-child(1) {
+  flex: 0.8;
+}
+
+.row:nth-child(2) {
+  flex: 1;
+  margin: 10px 0 0 0;
+
+}
+
+.row:nth-child(3) {
+  height: 50vh;
+}
+
+/* Button styles */
+.download-button {
+  background-color: #007bff; /* Button background color */
+  color: #fff; /* Text color */
+  padding: 10px 20px; /* Padding for the button */
+  border: none; /* Remove the default button border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Add a pointer cursor on hover */
+  font-size: 16px; /* Font size */
+  text-align: center; /* Center text horizontally */
+  text-decoration: none; /* Remove underline */
+  display: inline-block;
+  transition: background-color 0.3s; /* Smooth background color transition on hover */
+  justify-self: center;
+
+  /* Hover styles */
+  &:hover {
+    background-color: #0056b3; /* Darker background color on hover */
+  }
+}
+
+.center-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.download-button {
+  margin: 10px 0 0 0;
+}
+
+.table-responsive {
+  overflow-x: auto;
+  margin: 20px 0 0 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th, td {
+  text-align: center;
+  padding: 8px;
+}
+
+thead {
+  background-color: #f2f2f2;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+
+.download-btn:hover {
+  cursor: pointer;
 }
