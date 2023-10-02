@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.downloadAsAudio = exports.getVideoInfo = exports.validateYouTubeURL = void 0;
+exports.downloadFile = exports.getVideoInfo = exports.validateYouTubeURL = void 0;
 const ytdl_core_1 = __importDefault(require("ytdl-core"));
 const node_fs_1 = __importDefault(require("node:fs")); // more correct way
 //http for downloading
@@ -60,16 +60,38 @@ const getVideoInfo = async (url) => {
     return result;
 };
 exports.getVideoInfo = getVideoInfo;
-const downloadAsAudio = async (url, title) => {
-    // let video = ytdl(url, {filter: "audioonly"});
-    (0, ytdl_core_1.default)(url, { filter: "audioonly" })
-        .pipe(node_fs_1.default.createWriteStream(`./${title}.m4a`))
-        .on("finish", () => console.log("Finished downloaded"))
-        .on("error", (err) => {
-        console.error(err);
-    });
+// export const downloadAsAudio = async (url:string, title:string) => {
+//   // let video = ytdl(url, {filter: "audioonly"});
+//   ytdl(url, {filter: "audioonly"})
+//     .pipe(fs.createWriteStream(`./${title}.m4a`))
+//     .on("finish", () => console.log("Finished downloaded"))
+//     .on("error", (err) => {
+//       console.error(err);
+//     })
+// }
+const downloadFile = async (fileTypeToDownload, url, title) => {
+    if (fileTypeToDownload === "audio-m4a") {
+        (0, ytdl_core_1.default)(url, { filter: "audioonly" })
+            .pipe(node_fs_1.default.createWriteStream(`./${title}.m4a`))
+            .on("finish", () => console.log("Finished downloaded"))
+            .on("error", (err) => {
+            console.error(err);
+        });
+    }
+    if (fileTypeToDownload === "360p") {
+        ytdl_core_1.default.getInfo(url)
+            .then((info) => {
+            // const format = ytdl.chooseFormat(info.formats, {quality: "18"})
+            const choosenFormat = info.formats.find(format => format.itag === 18);
+            console.log(choosenFormat);
+            const videoStream = (0, ytdl_core_1.default)(url, {
+                format: choosenFormat
+            });
+            videoStream.pipe(node_fs_1.default.createWriteStream("./360p-video.mp4"));
+        });
+    }
 };
-exports.downloadAsAudio = downloadAsAudio;
+exports.downloadFile = downloadFile;
 (0, exports.getVideoInfo)("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu")
     .then((videoInfo) => {
     console.log(videoInfo);
@@ -89,7 +111,6 @@ const fetchVideos = async () => {
         .then((info) => {
         const qualityOptions = ["135"];
         const format = ytdl_core_1.default.chooseFormat(info.formats, { quality: "highest" });
-        console.log(format);
     });
 };
 fetchVideos();

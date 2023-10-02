@@ -45,14 +45,12 @@ io.on("connection", (socket) => {
             socket.emit("video-info", videoDetails);
         }
     });
-    socket.on("test", (info) => {
-        console.log(`Received ${info}`);
-    });
-    socket.on("downloadAudio", async (data) => {
-        console.log(data.title);
+    socket.on("downloadFile", async (data) => {
+        // sanitize inputs
         let cleanURL = (0, sanitize_html_1.default)(data.url);
-        console.log(cleanURL);
-        await (0, validURL_1.downloadAsAudio)(cleanURL, data.title);
+        let cleanTitle = (0, sanitize_html_1.default)(data.title);
+        let cleanFileTypeToDownload = (0, sanitize_html_1.default)(data.fileTypeToDownload);
+        await (0, validURL_1.downloadFile)(cleanFileTypeToDownload, cleanURL, cleanTitle);
     });
 });
 server.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
