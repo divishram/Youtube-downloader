@@ -7,7 +7,7 @@ import { Server } from "socket.io";
 import path from "path";
 import bodyParser from "body-parser";
 import sanitizeHtml from "sanitize-html";
-import { validateYouTubeURL, getVideoInfo } from "./utils/validURL";
+import { validateYouTubeURL, getVideoInfo, downloadAsAudio } from "./utils/validURL";
 import ytdl from "ytdl-core";
 // todo add async to functions
 
@@ -40,12 +40,7 @@ app.use(express.static(path.join(__dirname, "../public")));
 
 io.on("connection", (socket) => {
 
-  console.log("testing11aaa");
-
-  console.log(sanitizeHtml("<img src=x onerror=alert('img') />"));
-
   console.log("a user connected changed");
-
   socket.on("disconnect", () => console.log("A user disconnected"));
 
   socket.on("download", async (data) => {
@@ -55,13 +50,24 @@ io.on("connection", (socket) => {
     
     if (isValidYouTubeURL) {
       let videoDetails =  await getVideoInfo(sanitizedUrl);
-      console.log(videoDetails);
-
       socket.emit("video-info", videoDetails);
      
     }
-
   })
+
+  socket.on("test", (info) => {
+    console.log(`Received ${info}`);
+  })
+
+  socket.on("downloadAudio", async (data) => {
+    console.log(data.title);
+    let cleanURL = sanitizeHtml(data.url);
+    console.log(cleanURL);
+    await downloadAsAudio(cleanURL, data.title);
+  })
+
+
+
 });
 
 
