@@ -73,22 +73,40 @@ export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
   return result;
 }
 
-getVideoInfo("https://www.youtube.com/watch?v=z5uEMhZJCqo&list=RDz5uEMhZJCqo&start_radio=1")
+export const downloadAsAudio = async (url:string, title:string) => {
+  // let video = ytdl(url, {filter: "audioonly"});
+  ytdl(url, {filter: "audioonly"})
+    .pipe(fs.createWriteStream(`./${title}.m4a`))
+    .on("finish", () => console.log("Finished downloaded"))
+    .on("error", (err) => {
+      console.error(err);
+    })
+}
+
+getVideoInfo("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu")
   .then((videoInfo) => {
     console.log(videoInfo);
   })
   .catch((error) => {
     console.error("Error:", error);
   });
-
 // async function download (url: string): Promise{
 //   const info = await ytdl.getInfo(url)
 //   console.log(info);
 // }
+const fetchVideos = async () => {
+// const info = await ytdl.getInfo("https://www.youtube.com/watch?v=z5uEMhZJCqo&list=RDz5uEMhZJCqo&start_radio=1")
+// const videoFormats = ytdl.filterFormats(info.formats, "videoonly");
+// console.log(videoFormats);
+ytdl.getInfo("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu")
+    .then((info) => {
+      const qualityOptions = ["135"];
+      const format = ytdl.chooseFormat(info.formats,  {quality: "highest"});
+      console.log(format);
+    })
+}
 
+fetchVideos();
 
-  /*
-  step 1. get options
-  2 send that back to the user
-  form and show radio buttons
-  */
+// const url = "https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu";
+// ytdl(url).pipe(fs.createWriteStream("video.mp4"));
