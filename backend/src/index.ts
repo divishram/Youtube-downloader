@@ -7,8 +7,7 @@ import { Server } from "socket.io";
 import path from "path";
 import bodyParser from "body-parser";
 import sanitizeHtml from "sanitize-html";
-import { validateYouTubeURL, getVideoInfo, downloadAsAudio } from "./utils/validURL";
-import ytdl from "ytdl-core";
+import { validateYouTubeURL, getVideoInfo, downloadFile } from "./utils/validURL";
 // todo add async to functions
 
 dotenv.config();
@@ -55,15 +54,13 @@ io.on("connection", (socket) => {
     }
   })
 
-  socket.on("test", (info) => {
-    console.log(`Received ${info}`);
-  })
 
-  socket.on("downloadAudio", async (data) => {
-    console.log(data.title);
+  socket.on("downloadFile", async (data) => {
+    // sanitize inputs
     let cleanURL = sanitizeHtml(data.url);
-    console.log(cleanURL);
-    await downloadAsAudio(cleanURL, data.title);
+    let cleanTitle = sanitizeHtml(data.title);
+    let cleanFileTypeToDownload = sanitizeHtml(data.fileTypeToDownload);
+    await downloadFile(cleanFileTypeToDownload, cleanURL, cleanTitle);
   })
 
 
