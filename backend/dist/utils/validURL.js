@@ -3,8 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getVideoInfo = exports.validateYouTubeURL = void 0;
+exports.downloadAsAudio = exports.getVideoInfo = exports.validateYouTubeURL = void 0;
 const ytdl_core_1 = __importDefault(require("ytdl-core"));
+const node_fs_1 = __importDefault(require("node:fs")); // more correct way
 //http for downloading
 /**
  * Validates a URL to check if it has the "https" protocol, a non-empty host, and a non-empty pathname.
@@ -59,7 +60,17 @@ const getVideoInfo = async (url) => {
     return result;
 };
 exports.getVideoInfo = getVideoInfo;
-(0, exports.getVideoInfo)("https://www.youtube.com/watch?v=z5uEMhZJCqo&list=RDz5uEMhZJCqo&start_radio=1")
+const downloadAsAudio = async (url, title) => {
+    // let video = ytdl(url, {filter: "audioonly"});
+    (0, ytdl_core_1.default)(url, { filter: "audioonly" })
+        .pipe(node_fs_1.default.createWriteStream(`./${title}.m4a`))
+        .on("finish", () => console.log("Finished downloaded"))
+        .on("error", (err) => {
+        console.error(err);
+    });
+};
+exports.downloadAsAudio = downloadAsAudio;
+(0, exports.getVideoInfo)("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu")
     .then((videoInfo) => {
     console.log(videoInfo);
 })
@@ -70,9 +81,18 @@ exports.getVideoInfo = getVideoInfo;
 //   const info = await ytdl.getInfo(url)
 //   console.log(info);
 // }
-/*
-step 1. get options
-2 send that back to the user
-form and show radio buttons
-*/ 
+const fetchVideos = async () => {
+    // const info = await ytdl.getInfo("https://www.youtube.com/watch?v=z5uEMhZJCqo&list=RDz5uEMhZJCqo&start_radio=1")
+    // const videoFormats = ytdl.filterFormats(info.formats, "videoonly");
+    // console.log(videoFormats);
+    ytdl_core_1.default.getInfo("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu")
+        .then((info) => {
+        const qualityOptions = ["135"];
+        const format = ytdl_core_1.default.chooseFormat(info.formats, { quality: "highest" });
+        console.log(format);
+    });
+};
+fetchVideos();
+// const url = "https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu";
+// ytdl(url).pipe(fs.createWriteStream("video.mp4"));
 //# sourceMappingURL=validURL.js.map

@@ -10,13 +10,9 @@ const cors_1 = __importDefault(require("cors"));
 const socket_io_1 = require("socket.io");
 const path_1 = __importDefault(require("path"));
 const body_parser_1 = __importDefault(require("body-parser"));
-const router_1 = __importDefault(require("./routes/router"));
 const sanitize_html_1 = __importDefault(require("sanitize-html"));
-// import validateYouTubeURL from "./utils/validURL";
 const validURL_1 = require("./utils/validURL");
-// todo add mongo DB for list of downloads
 // todo add async to functions
-// todo use ts-node (i think maybe it can cause issues cause of diff engine, but just double check)
 dotenv_1.default.config();
 const PORT = process.env.PORT ?? 4000;
 const app = (0, express_1.default)();
@@ -37,10 +33,7 @@ app.use(express_1.default.static(path_1.default.join(__dirname, "../public")));
 //   logger.info("Info about server.");
 //   res.render("index");
 // });
-app.use("/", router_1.default);
 io.on("connection", (socket) => {
-    console.log("testing11aaa");
-    console.log((0, sanitize_html_1.default)("<img src=x onerror=alert('img') />"));
     console.log("a user connected changed");
     socket.on("disconnect", () => console.log("A user disconnected"));
     socket.on("download", async (data) => {
@@ -49,13 +42,20 @@ io.on("connection", (socket) => {
         let isValidYouTubeURL = (0, validURL_1.validateYouTubeURL)(sanitizedUrl);
         if (isValidYouTubeURL) {
             let videoDetails = await (0, validURL_1.getVideoInfo)(sanitizedUrl);
-            console.log(videoDetails);
             socket.emit("video-info", videoDetails);
         }
     });
+    socket.on("test", (info) => {
+        console.log(`Received ${info}`);
+    });
+    socket.on("downloadAudio", async (data) => {
+        console.log(data.title);
+        let cleanURL = (0, sanitize_html_1.default)(data.url);
+        console.log(cleanURL);
+        await (0, validURL_1.downloadAsAudio)(cleanURL, data.title);
+    });
 });
 server.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
-// todo add typescript start script in package.json
 /*
 ASYNC EXAMLPE
 app.get('/crypto', async (req, res) => {
