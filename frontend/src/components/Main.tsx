@@ -1,9 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { socket } from "../socket";
 import { io } from "socket.io-client";
+import VideoContent from "./VideoContent";
+import Table from "./Table";
 // todo add debounce function to prevent too many re-renders
-
-// type VideoInfo = {title: string, duration: string, videoId: string}
 
 interface VideoInfo {
   title: string;
@@ -15,15 +15,13 @@ interface VideoInfo {
 interface Format {
   mimeType: string | undefined;
   quality: string;
-  size : number;
+  size: number;
 }
 
 export default function MainPart() {
-  // const inputRef = useRef();
   const [url, setUrl] = useState<string>("");
-  // const urlRef = useRef<string>("");
   const [videoInfo, setVideoInfo] = useState<VideoInfo>();
-
+  
   useEffect(() => {
     const socket = io("http://localhost:4000");
     socket.on("connect", () => {
@@ -41,7 +39,7 @@ export default function MainPart() {
     }
     return () => {
       socket.off("download");
-    }
+    };
   }, [url]);
 
   // todo combine in 1st one
@@ -49,24 +47,30 @@ export default function MainPart() {
     socket.on("video-info", (data) => {
       console.log(data);
       setVideoInfo(data);
-    })
+    });
     return () => {
       socket.off("video-info");
-    }
-  })
+    };
+  });
   console.log(videoInfo);
-  // todo onclick clear input e => e.target.value = "";
-  return (
-    <main className="container">
-      <div className="description">
-        <h3>Download into Video or MP3 format</h3>
-      </div>
 
-      <form>
+  const dataToPass = {
+    img: videoInfo?.videoId ?? "",
+    title: videoInfo?.title ?? "",
+    duration: videoInfo?.duration ?? "",
+    url : url ?? ""
+  }
+  return (
+    <div>
+      <main className="container">
+        <div className="description">
+          <h3>Download into Video or MP3 format</h3>
+        </div>
+
         <input
-          // todo add focus
           type="url"
           className="url"
+          autoFocus
           placeholder="Enter YouTube URL"
           value={url}
           onClick={() => setUrl("")}
@@ -75,36 +79,38 @@ export default function MainPart() {
             console.log(e.target.value);
           }}
         />
+      </main>
 
-      </form>
+      <VideoContent data={dataToPass}></VideoContent>
+      {/* {videoInfo && <VideoFormats formats={videoInfo.formats} />} */}
 
-      {videoInfo && <VideoFormats formats={videoInfo.formats} />}
+      {/* <p>{videoInfo?.title}</p> */}
+      {/* <p>{videoInfo?.duration} seconds</p> */}
 
-
-      <p>{videoInfo?.title}</p>
-      <p>{videoInfo?.duration} seconds</p>
-      <img src={`https://img.youtube.com/vi/${videoInfo?.videoId}/sddefault.jpg`} height={150} alt="" />
-    </main>
+      {/* {videoInfo?.videoId && (
+        <img
+          src={`https://img.youtube.com/vi/${videoInfo?.videoId}/sddefault.jpg`}
+          height={150}
+          alt=""
+        />
+      )} */}
+      <Table data={dataToPass}></Table>
+    </div>
   );
 }
 
-
-
-function VideoFormats(props: {formats: Format[]}) {
+function VideoFormats(props: { formats: Format[] }) {
   return (
-  <ul>
-
-    {
-      props.formats.map((format) => 
-      <>
-        <li>{format.mimeType}</li>
-        <li>{format.quality}</li>
-        <li>{format.size} Bytes</li>
-      </>
-      )
-    }
-  </ul>
-  )
+    <ul>
+      {props.formats.map((format) => (
+        <>
+          <li key={1}>{format.mimeType}</li>
+          <li key={2}>{format.quality}</li>
+          <li key={3}>{format.size} Bytes</li>
+        </>
+      ))}
+    </ul>
+  );
 }
 
 // todo share interface for both backend and frontend

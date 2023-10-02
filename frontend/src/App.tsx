@@ -35,7 +35,7 @@ function App() {
     <>
       <Nav></Nav>
       <MainPart></MainPart>
-      <Status props={isConnected}></Status>
+      {/* <Status props={isConnected}></Status> */}
     </>
   );
 }
