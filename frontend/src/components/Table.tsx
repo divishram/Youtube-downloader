@@ -1,6 +1,7 @@
 import React from "react";
 import { socket } from "../socket";
 import formatTime from "../utils/ConvertTime";
+import DownloadBtn from "./DownloadBtn.svg";
 
 interface VideoContentProps {
   data: {
@@ -10,14 +11,16 @@ interface VideoContentProps {
     url: string;
   };
 }
-
+// todo data should be sent from server here, then object or array should be iterated to populate table
 export default function Table(props: VideoContentProps) {
-  const downloadAudio = () => {
+  const download = (e: any) => {
     console.log("downloading!");
+    let fileTypeToDownload = e.target.parentElement.className;
+    console.log(fileTypeToDownload);
     if (props.data.url && props.data.title) {
       let title = props.data.title;
       let url = props.data.url;
-      socket.emit("downloadAudio", { url, title });
+      socket.emit("downloadFile", { url, title, fileTypeToDownload });
     }
   };
 
@@ -27,41 +30,34 @@ export default function Table(props: VideoContentProps) {
         <table>
           <thead>
             <tr>
+              <th>Format</th>
               <th>Quality</th>
-              <th>Duration</th>
               <th>Action</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td>.m4a</td>
-              <td>{formatTime(props.data.duration)}</td>
-              <td>
-                <svg
+              <td>Audio</td>
+              {/* File format is in td because some issues occured when placed inside SVG file
+                  using data-* attribute. Maybe change to img or CSS?
+              */}
+              <td className="audio-m4a">
+                <img
                   className="download-btn"
-                  onClick={downloadAudio}
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M11 5C11 4.44772 11.4477 4 12 4C12.5523 4 13 4.44772 13 5V12.1578L16.2428 8.91501L17.657 10.3292L12.0001 15.9861L6.34326 10.3292L7.75748 8.91501L11 12.1575V5Z"
-                    fill="currentColor"
-                  />
-                  <path
-                    d="M4 14H6V18H18V14H20V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V14Z"
-                    fill="currentColor"
-                  />
-                </svg>
+                  src={DownloadBtn}
+                  alt="Download Button"
+                  onClick={download}
+                />
               </td>
             </tr>
 
             <tr>
-              <td>Data 1</td>
-              <td>Data 2</td>
-              <td>Data 3</td>
+              <td>.mp4</td>
+              <td>360p</td>
+              <td className="360p">
+                <img className="download-btn" src={DownloadBtn} alt="Download Button" onClick={download} />
+              </td>
             </tr>
           </tbody>
         </table>
