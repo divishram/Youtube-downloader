@@ -59,6 +59,24 @@ export default function Table(props: VideoContentProps) {
                 <img className="download-btn" src={DownloadBtn} alt="Download Button" onClick={download} />
               </td>
             </tr>
+
+            <tr>
+              <td>.mp4</td>
+              <td>720p</td>
+              <td className="720p">
+                <img className="download-btn" src={DownloadBtn} alt="Download Button" onClick={download} />
+              </td>
+            </tr>
+
+            <tr>
+              <td>.mp4</td>
+              <td>1080p</td>
+              <td className="1080p">
+                <img className="download-btn" src={DownloadBtn} alt="Download Button" onClick={download} />
+              </td>
+            </tr>
+
+
           </tbody>
         </table>
       )}
