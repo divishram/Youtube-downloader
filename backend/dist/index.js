@@ -12,7 +12,6 @@ const path_1 = __importDefault(require("path"));
 const body_parser_1 = __importDefault(require("body-parser"));
 const sanitize_html_1 = __importDefault(require("sanitize-html"));
 const validURL_1 = require("./utils/validURL");
-// todo add async to functions
 dotenv_1.default.config();
 const PORT = process.env.PORT ?? 4000;
 const app = (0, express_1.default)();
@@ -33,6 +32,30 @@ app.use(express_1.default.static(path_1.default.join(__dirname, "../public")));
 //   logger.info("Info about server.");
 //   res.render("index");
 // });
+// const ls = spawn("ls", ["-lh"]);
+// ls.stdout.on("data", (data) => {
+//   console.log(`stdout: ${data}`)
+// })
+// ls.stderr.on("data", (data) => {
+//   console.error(`stderr: ${data}`);
+// })
+// ls.on("close", (code) => {
+//   console.log(`Child process exited with code ${code}` );
+// })
+// const child = fork(`${__dirname}/child.js`);
+// child.on("message", (msg: any) => {
+//   console.log(`Message from child: ${msg.counter}`);
+// });
+// child.send({hello: "world"});
+// const childProcess = fork(`${__dirname}/cpuBound.js`);
+// childProcess.on("message", (msg) => {
+//   console.log(`Calculated value: ${msg}`);
+// })
+// const jsKeywords = ["let", "const", "for"];
+// console.log("The following are JavaScript Reserved keywords: ");
+// for (const keyword of jsKeywords) {
+//   console.log(keyword);
+// }
 io.on("connection", (socket) => {
     console.log("a user connected changed");
     socket.on("disconnect", () => console.log("A user disconnected"));

@@ -4,11 +4,13 @@ import dotenv from "dotenv";
 import { logger } from "./logger";
 import cors from "cors";
 import { Server } from "socket.io";
-import path from "path";
+import path, { dirname } from "path";
 import bodyParser from "body-parser";
 import sanitizeHtml from "sanitize-html";
 import { validateYouTubeURL, getVideoInfo, downloadFile } from "./utils/validURL";
 // todo add async to functions
+import { spawn, fork, execFile as execFileCallback, execFile } from "node:child_process";
+import {promisify} from "node:util";
 
 dotenv.config();
 const PORT = process.env.PORT ?? 4000;
@@ -36,6 +38,37 @@ app.use(express.static(path.join(__dirname, "../public")));
 //   logger.info("Info about server.");
 //   res.render("index");
 // });
+// const ls = spawn("ls", ["-lh"]);
+// ls.stdout.on("data", (data) => {
+//   console.log(`stdout: ${data}`)
+// })
+
+// ls.stderr.on("data", (data) => {
+//   console.error(`stderr: ${data}`);
+// })
+
+// ls.on("close", (code) => {
+//   console.log(`Child process exited with code ${code}` );
+// })
+
+// const child = fork(`${__dirname}/child.js`);
+// child.on("message", (msg: any) => {
+//   console.log(`Message from child: ${msg.counter}`);
+// });
+
+// child.send({hello: "world"});
+// const childProcess = fork(`${__dirname}/cpuBound.js`);
+// childProcess.on("message", (msg) => {
+//   console.log(`Calculated value: ${msg}`);
+// })
+
+
+// const jsKeywords = ["let", "const", "for"];
+// console.log("The following are JavaScript Reserved keywords: ");
+// for (const keyword of jsKeywords) {
+//   console.log(keyword);
+// }
+
 
 io.on("connection", (socket) => {
 
