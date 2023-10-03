@@ -50,11 +50,7 @@ export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
   return result;
 };
 
-export const downloadFile = async (
-  fileTypeToDownload: string,
-  url: string,
-  title: string
-) => {
+export const downloadFile = async (fileTypeToDownload: string, url: string, title: string) => {
   if (fileTypeToDownload === "audio-m4a") {
     ytdl(url, { filter: "audioonly" })
       .pipe(fs.createWriteStream(`./${title}.m4a`))
@@ -66,12 +62,6 @@ export const downloadFile = async (
 
   if (fileTypeToDownload === "360p") {
     ytdl.getInfo(url).then((info) => {
-      // const format = ytdl.chooseFormat(info.formats, {quality: "18"})
-      // todo itag 137 is h.264 codec, 248 is vp9 codec
-      // https://imagekit.io/blog/vp9-vs-h264/   (site says vp9 better vodec)
-      // maybe use ffmpeg setttings to convert to vp9 codec
-      // use h.264 codec because more widespread support
-      // research and compare to av1
       const choosenFormat = info.formats.find((format) => format.itag === 137);
       console.log(choosenFormat);
       const videoStream = ytdl(url, {
@@ -93,11 +83,7 @@ export const downloadFile = async (
   }
 };
 
-export const saveVideoInDirectory = async (
-  url: string,
-  title: string,
-  itag: number
-) => {
+export const saveVideoInDirectory = async (url: string, title: string, itag: number) => {
   ytdl
     .getInfo(url)
     .then((info) => {
