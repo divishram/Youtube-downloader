@@ -50,81 +50,94 @@ export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
   return result;
 };
 
+// todo maybe add in 480p?
+type DownloadFileType = "audio-m4a" | "360p" | "720p" | "1080p";
+
+/**
+ * Downloads and processes media files based the button clicked in React.js 
+ *
+ * @param fileTypeToDownload - The type of media to download (e.g., "audio-m4a", "360p", "720p", "1080p").
+ * @param url - The URL of the media resource to download.
+ * @param title - The title used for saving the downloaded media.
+ * @throws {Error} If an unsupported file type is provided or an error occurs during the download or processing.
+ */
 export const downloadFile = async (
-  fileTypeToDownload: string,
+  fileTypeToDownload: DownloadFileType,
   url: string,
   title: string
 ) => {
-  if (fileTypeToDownload === "audio-m4a") {
-    await saveAudioInDirectory(url, title);
+  try {
+    // Only download audio
+    if (fileTypeToDownload === "audio-m4a") {
+      await saveAudioInDirectory(url, title);
+    }
+
+    // 360p videos have audio and video combined, so only need to download video
+    else if (fileTypeToDownload === "360p") {
+      await saveVideoInDirectory(url, title, 137);
+    }
+
+    // Higher resolutions need to download audio/video and merge them
+    else if (fileTypeToDownload === "720p") {
+      await saveVideoInDirectory(url, title, 136); // 136 is itag for 720p in ytdl
+      await saveAudioInDirectory(url, title);
+      await combineAudioVideo(title);
+    } else if (fileTypeToDownload === "1080p") {
+      await saveVideoInDirectory(url, title, 137); // 137 is itag for 1080p for ytdl
+      await saveAudioInDirectory(url, title);
+      await combineAudioVideo(title);
+    } else {
+      throw new Error("Unsupported file type to download");
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
-
-  // 360p videos have audio and video combined, so only need to download video
-  if (fileTypeToDownload === "360p") {
-    await saveVideoInDirectory(url, title, 137);
-  }
-
-  // Higher resolutions need to download audio/video and merge them
-  if (fileTypeToDownload === "720p") {
-    await saveVideoInDirectory(url, title, 136);
-    await saveAudioInDirectory(url, title);
-    await combineAudioVideo(title);
-  }
-
-  if (fileTypeToDownload === "1080p") {
-    await saveVideoInDirectory(url, title, 137);
-    await saveAudioInDirectory(url, title);
-    await combineAudioVideo(title);
-  }
-};
-
-export const saveVideoInDirectoryOLD_ = async (
-  url: string,
-  title: string,
-  itag: number
-) => {
-  ytdl
-    .getInfo(url)
-    .then((info) => {
-      const choosenFormat = info.formats.find((format) => format.itag === itag);
-      const videoStream = ytdl(url, { format: choosenFormat });
-      videoStream
-        .pipe(fs.createWriteStream(`./downloads/${title}-video.mp4`))
-        .on("error", (err) => console.error(err))
-        .on("finish", () => console.log("finished!"));
-    })
-    .finally(() => console.log("finished"))
-    .catch((err) => console.error(err));
-};
-
-export const saveAudioInDirectory_OLD = async (url: string, title: string) => {
-  ytdl(url, { filter: "audioonly" })
-    .pipe(fs.createWriteStream(`./downloads/${title}.m4a`))
-    .on("error", (err) => console.error(err));
 };
 
 // Do not need create child process if using fluent-ffmpeg
-export const combineAudioVideo = async (title: string) => {
-  const audioFile = `./downloads/input_audio/${title}.m4a`;
-  const videoFile = `./downloads/input_video/${title}.mp4`;
-  const outputVideoFile = `./downloads/output/${title}.mp4`;
+/**
+ * Combines audio and video files into a single video file.
+ *
+ * @param title - The title used for identifying and naming the combined video file.
+ * @returns {Promise<void>} A Promise that resolves when the audio and video have been successfully combined.
+ * @throws {Error} If an error occurs during the combination process.
+ */
+export const combineAudioVideo = async (title: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const audioFile = `./downloads/input_audio/${title}.m4a`;
+    const videoFile = `./downloads/input_video/${title}.mp4`;
+    const outputVideoFile = `./downloads/output/${title}.mp4`;
 
-  const command = ffmpeg();
-  command.input(videoFile);
-  command.input(audioFile);
+    const command = ffmpeg();
+    command.input(videoFile);
+    command.input(audioFile);
 
-  command
-    .output(outputVideoFile)
-    .on("end", () => console.log("Audio and video have been combined"))
-    .on("error", (err) =>
-      console.error(`Erroring combining audio/video: ${err}`)
-    );
-  command.run();
+    command
+      .output(outputVideoFile)
+      .on("end", () => {
+        console.log("Audio and video have been combined");
+        resolve();
+      })
+      .on("error", (err) => {
+        console.error(`Error combining audio/video: ${err}`);
+        reject(err);
+      });
+    command.run();
+  });
 };
-// combineAudioVideo("video");
+
 // combineVideos();
 console.log("Non-blocking code should run here....");
 
+/**
+ * Downloads audio from a given URL and saves it to a specified directory.
+ *
+ * @param url - The URL of the media resource to download.
+ * @param title - The title used for identifying and naming the downloaded audio file.
+ * @returns {Promise<void>} A Promise that resolves when the audio has been successfully downloaded and saved.
+ * @throws {Error} If an error occurs during the download or saving process.
+ */
 export const saveAudioInDirectory = async (
   url: string,
   title: string
@@ -142,6 +155,15 @@ export const saveAudioInDirectory = async (
   });
 };
 
+/**
+ * Downloads a video from a given URL and saves it to a specified directory.
+ *
+ * @param url - The URL of the video resource to download.
+ * @param title - The title used for identifying and naming the downloaded video file.
+ * @param itag - The specific ITAG value representing the desired video format. (See the ytdl docs for list of itags)
+ * @returns {Promise<void>} A Promise that resolves when the video has been successfully downloaded and saved.
+ * @throws {Error} If an error occurs during the download or saving process.
+ */
 export const saveVideoInDirectory = async (
   url: string,
   title: string,
@@ -164,9 +186,14 @@ export const saveVideoInDirectory = async (
         })
         .on("finish", () => {
           console.log("Download finished!");
+          /*
+          Sometimes FFMPEG would throw error and says file does not exist after download
+          So adding settimeout for 2secs ensures it finished loading and it can be combined
+          with the audio file
+          */
           setTimeout(() => {
-            resolve();
-          }, 2000); // Resolve the promise when download is finished
+            resolve(); // Resolve promise when download is finished
+          }, 2000); 
         });
     } catch (err) {
       console.error(err);
