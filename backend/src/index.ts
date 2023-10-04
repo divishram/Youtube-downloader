@@ -36,7 +36,6 @@ app.use(express.static(path.join(__dirname, "../public")));
 //   res.render("index");
 // });
 
-
 io.on("connection", (socket) => {
 
   console.log("a user connected");

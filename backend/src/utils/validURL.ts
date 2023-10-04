@@ -49,8 +49,6 @@ export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
   return result;
 };
 
-type DownloadFileType = "audio-m4a" | "360p" | "720p" | "1080p";
-
 /**
  * Downloads and processes media files based the button clicked in React.js 
  *
@@ -60,7 +58,7 @@ type DownloadFileType = "audio-m4a" | "360p" | "720p" | "1080p";
  * @throws {Error} If an unsupported file type is provided or an error occurs during the download or processing.
  */
 export const downloadFile = async (
-  fileTypeToDownload: DownloadFileType,
+  fileTypeToDownload: string,
   url: string,
   title: string
 ) => {
