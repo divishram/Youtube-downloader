@@ -37,7 +37,6 @@ interface Format {
 export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
   const info = await ytdl.getInfo(url);
   const result: VideoInfo = {
-    // Lots of empty spaces in YT videos, replace with dash
     title: info.videoDetails.title,
     duration: info.videoDetails.lengthSeconds,
     videoId: info.videoDetails.videoId,
@@ -50,7 +49,6 @@ export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
   return result;
 };
 
-// todo maybe add in 480p?
 type DownloadFileType = "audio-m4a" | "360p" | "720p" | "1080p";
 
 /**
