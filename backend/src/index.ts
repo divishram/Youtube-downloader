@@ -8,9 +8,6 @@ import path, { dirname } from "path";
 import bodyParser from "body-parser";
 import sanitizeHtml from "sanitize-html";
 import { validateYouTubeURL, getVideoInfo, downloadFile } from "./utils/validURL";
-// todo add async to functions
-import { spawn, fork, execFile as execFileCallback, execFile } from "node:child_process";
-import {promisify} from "node:util";
 
 dotenv.config();
 const PORT = process.env.PORT ?? 4000;
