@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "nodemon dist/index",
     "test": "ts-node src/index",
-    "start:watch": "npx tsc-watch --onSuccess 'node --inspect dist/index.js'"
+    "start": "npx tsc-watch --onSuccess 'node --inspect dist/index.js'"
   },
   "author": "Divish Ram",
   "license": "ISC",

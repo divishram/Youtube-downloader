@@ -38,55 +38,23 @@ app.use(express.static(path.join(__dirname, "../public")));
 //   logger.info("Info about server.");
 //   res.render("index");
 // });
-// const ls = spawn("ls", ["-lh"]);
-// ls.stdout.on("data", (data) => {
-//   console.log(`stdout: ${data}`)
-// })
-
-// ls.stderr.on("data", (data) => {
-//   console.error(`stderr: ${data}`);
-// })
-
-// ls.on("close", (code) => {
-//   console.log(`Child process exited with code ${code}` );
-// })
-
-// const child = fork(`${__dirname}/child.js`);
-// child.on("message", (msg: any) => {
-//   console.log(`Message from child: ${msg.counter}`);
-// });
-
-// child.send({hello: "world"});
-// const childProcess = fork(`${__dirname}/cpuBound.js`);
-// childProcess.on("message", (msg) => {
-//   console.log(`Calculated value: ${msg}`);
-// })
-
-
-// const jsKeywords = ["let", "const", "for"];
-// console.log("The following are JavaScript Reserved keywords: ");
-// for (const keyword of jsKeywords) {
-//   console.log(keyword);
-// }
 
 
 io.on("connection", (socket) => {
 
-  console.log("a user connected changed");
+  console.log("a user connected");
   socket.on("disconnect", () => console.log("A user disconnected"));
 
   socket.on("download", async (data) => {
     let sanitizedUrl = sanitizeHtml(data.url);
-    // string should be "youtube.com/watch?v=" regex. youtube.com should be false bc homepage not video
+    // string should be "youtube.com/watch?v=" or youtube.com/shorts/SHORT_ID for regex test
     let isValidYouTubeURL = validateYouTubeURL(sanitizedUrl);
     
     if (isValidYouTubeURL) {
       let videoDetails =  await getVideoInfo(sanitizedUrl);
       socket.emit("video-info", videoDetails);
-     
     }
   })
-
 
   socket.on("downloadFile", async (data) => {
     // sanitize inputs
@@ -95,31 +63,7 @@ io.on("connection", (socket) => {
     let cleanFileTypeToDownload = sanitizeHtml(data.fileTypeToDownload);
     await downloadFile(cleanFileTypeToDownload, cleanURL, cleanTitle);
   })
-
-
-
 });
 
 
 server.listen(PORT, () => console.log(`Listening on http://localhost:${PORT}`));
-/*
-ASYNC EXAMLPE
-app.get('/crypto', async (req, res) => {
-  try {
-    const response = await axios.get(
-      'https://api2.binance.com/api/v3/ticker/24hr'
-    );
-
-    const tickerPrice = response.data;
-
-    res.json(tickerPrice);
-  } catch (err) {
-    logger.error(err);
-    res.status(500).send('Internal server error');
-  }
-});
-
-app.listen('4000', () => {
-  console.log('Server is running on port 4000');
-});
-*/

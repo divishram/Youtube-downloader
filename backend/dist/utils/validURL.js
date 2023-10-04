@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.combineAudioVideo = exports.saveAudioInDirectory = exports.saveVideoInDirectory = exports.downloadFile = exports.getVideoInfo = exports.validateYouTubeURL = void 0;
+exports.saveVideoInDirectory = exports.saveAudioInDirectory = exports.combineAudioVideo = exports.saveAudioInDirectory_OLD = exports.saveVideoInDirectoryOLD_ = exports.downloadFile = exports.getVideoInfo = exports.validateYouTubeURL = void 0;
 const ytdl_core_1 = __importDefault(require("ytdl-core"));
 const fluent_ffmpeg_1 = __importDefault(require("fluent-ffmpeg"));
 const node_fs_1 = __importDefault(require("node:fs"));
@@ -14,8 +14,7 @@ const node_fs_1 = __importDefault(require("node:fs"));
  */
 const validateYouTubeURL = (url) => {
     try {
-        // todo add regex for YouTube shorts too
-        const youtubeUrlPattern = /^(https?:\/\/)?(www\.)?youtube\.com\/watch\?v=[\w-]+(&\S*)?$/;
+        const youtubeUrlPattern = /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/shorts\/)[\w-]+(&\S*)*$/;
         const isValid = youtubeUrlPattern.test(url);
         return isValid;
     }
@@ -43,41 +42,26 @@ const getVideoInfo = async (url) => {
 exports.getVideoInfo = getVideoInfo;
 const downloadFile = async (fileTypeToDownload, url, title) => {
     if (fileTypeToDownload === "audio-m4a") {
-        (0, ytdl_core_1.default)(url, { filter: "audioonly" })
-            .pipe(node_fs_1.default.createWriteStream(`./${title}.m4a`))
-            .on("finish", () => console.log("Finished downloaded"))
-            .on("error", (err) => {
-            console.error(err);
-        });
+        await (0, exports.saveAudioInDirectory)(url, title);
     }
+    // 360p videos have audio and video combined, so only need to download video
     if (fileTypeToDownload === "360p") {
-        ytdl_core_1.default.getInfo(url).then((info) => {
-            // const format = ytdl.chooseFormat(info.formats, {quality: "18"})
-            // todo itag 137 is h.264 codec, 248 is vp9 codec
-            // https://imagekit.io/blog/vp9-vs-h264/   (site says vp9 better vodec)
-            // maybe use ffmpeg setttings to convert to vp9 codec
-            // use h.264 codec because more widespread support
-            // research and compare to av1
-            const choosenFormat = info.formats.find((format) => format.itag === 137);
-            console.log(choosenFormat);
-            const videoStream = (0, ytdl_core_1.default)(url, {
-                format: choosenFormat,
-            });
-            videoStream.pipe(node_fs_1.default.createWriteStream("./360p-video.mp4"));
-        });
+        await (0, exports.saveVideoInDirectory)(url, title, 137);
     }
+    // Higher resolutions need to download audio/video and merge them
     if (fileTypeToDownload === "720p") {
-        console.log("720p clicked!");
-        (0, exports.saveVideoInDirectory)(url, title, 136);
+        await (0, exports.saveVideoInDirectory)(url, title, 136);
+        await (0, exports.saveAudioInDirectory)(url, title);
+        await (0, exports.combineAudioVideo)(title);
     }
     if (fileTypeToDownload === "1080p") {
-        // await saveVideoInDirectory(url, title, 137);
-        // await saveAudioInDirectory(url, title);
+        await (0, exports.saveVideoInDirectory)(url, title, 137);
+        await (0, exports.saveAudioInDirectory)(url, title);
         await (0, exports.combineAudioVideo)(title);
     }
 };
 exports.downloadFile = downloadFile;
-const saveVideoInDirectory = async (url, title, itag) => {
+const saveVideoInDirectoryOLD_ = async (url, title, itag) => {
     ytdl_core_1.default
         .getInfo(url)
         .then((info) => {
@@ -85,47 +69,24 @@ const saveVideoInDirectory = async (url, title, itag) => {
         const videoStream = (0, ytdl_core_1.default)(url, { format: choosenFormat });
         videoStream
             .pipe(node_fs_1.default.createWriteStream(`./downloads/${title}-video.mp4`))
-            .on("error", (err) => console.error(err));
+            .on("error", (err) => console.error(err))
+            .on("finish", () => console.log("finished!"));
     })
+        .finally(() => console.log("finished"))
         .catch((err) => console.error(err));
 };
-exports.saveVideoInDirectory = saveVideoInDirectory;
-const saveAudioInDirectory = async (url, title) => {
+exports.saveVideoInDirectoryOLD_ = saveVideoInDirectoryOLD_;
+const saveAudioInDirectory_OLD = async (url, title) => {
     (0, ytdl_core_1.default)(url, { filter: "audioonly" })
         .pipe(node_fs_1.default.createWriteStream(`./downloads/${title}.m4a`))
         .on("error", (err) => console.error(err));
 };
-exports.saveAudioInDirectory = saveAudioInDirectory;
-// getVideoInfo("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu")
-//   .then((videoInfo) => {
-//     console.log(videoInfo);
-//   })
-//   .catch((error) => {
-//     console.error("Error:", error);
-//   });
-// async function download (url: string): Promise{
-//   const info = await ytdl.getInfo(url)
-//   console.log(info);
-// }
-const fetchVideos = async () => {
-    // const info = await ytdl.getInfo("https://www.youtube.com/watch?v=z5uEMhZJCqo&list=RDz5uEMhZJCqo&start_radio=1")
-    // const videoFormats = ytdl.filterFormats(info.formats, "videoonly");
-    // console.log(videoFormats);
-    ytdl_core_1.default
-        .getInfo("https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu")
-        .then((info) => {
-        const qualityOptions = ["135"];
-        const format = ytdl_core_1.default.chooseFormat(info.formats, { quality: "highest" });
-    });
-};
-// fetchVideos();
-// const url = "https://www.youtube.com/watch?v=0mCVpUDCkEk&pp=ygUPd2Ugc3RpbGwgcm9sbGlu";
-// ytdl(url).pipe(fs.createWriteStream("video.mp4"));
+exports.saveAudioInDirectory_OLD = saveAudioInDirectory_OLD;
 // Do not need create child process if using fluent-ffmpeg
 const combineAudioVideo = async (title) => {
-    const audioFile = `./downloads/${title}.m4a`;
-    const videoFile = `./downloads/${title}-video.mp4`;
-    const outputVideoFile = `./downloads/${title}-combined.mp4`;
+    const audioFile = `./downloads/input_audio/${title}.m4a`;
+    const videoFile = `./downloads/input_video/${title}.mp4`;
+    const outputVideoFile = `./downloads/output/${title}.mp4`;
     const command = (0, fluent_ffmpeg_1.default)();
     command.input(videoFile);
     command.input(audioFile);
@@ -136,6 +97,49 @@ const combineAudioVideo = async (title) => {
     command.run();
 };
 exports.combineAudioVideo = combineAudioVideo;
+// combineAudioVideo("video");
 // combineVideos();
 console.log("Non-blocking code should run here....");
+const saveAudioInDirectory = async (url, title) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            (0, ytdl_core_1.default)(url, { filter: "audioonly" })
+                .pipe(node_fs_1.default.createWriteStream(`./downloads/input_audio/${title}.m4a`))
+                .on("error", (err) => console.error(err))
+                .on("finish", () => resolve()); // Resolve promise
+        }
+        catch (err) {
+            console.error(err);
+            reject(err); // Reject the promise on any error
+        }
+    });
+};
+exports.saveAudioInDirectory = saveAudioInDirectory;
+const saveVideoInDirectory = async (url, title, itag) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const info = await ytdl_core_1.default.getInfo(url);
+            const choosenFormat = info.formats.find((format) => format.itag === itag);
+            const videoStream = (0, ytdl_core_1.default)(url, { format: choosenFormat });
+            const writeStream = node_fs_1.default.createWriteStream(`./downloads/input_video/${title}.mp4`);
+            videoStream
+                .pipe(writeStream)
+                .on("error", (err) => {
+                console.error(err);
+                reject(err); // Reject the promise on error
+            })
+                .on("finish", () => {
+                console.log("Download finished!");
+                setTimeout(() => {
+                    resolve();
+                }, 2000); // Resolve the promise when download is finished
+            });
+        }
+        catch (err) {
+            console.error(err);
+            reject(err); // Reject the promise on any error
+        }
+    });
+};
+exports.saveVideoInDirectory = saveVideoInDirectory;
 //# sourceMappingURL=validURL.js.map
