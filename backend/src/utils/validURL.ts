@@ -34,6 +34,11 @@ interface Format {
   size: number;
 }
 
+/**
+ * Retrieves information about a YouTube video based on its URL.
+ * @param {string} url - The URL of the YouTube video.
+ * @returns {Promise<VideoInfo>} - A Promise that resolves to an object containing video information.
+ */
 export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
   const info = await ytdl.getInfo(url);
   const result: VideoInfo = {
@@ -50,7 +55,7 @@ export const getVideoInfo = async (url: string): Promise<VideoInfo> => {
 };
 
 /**
- * Downloads and processes media files based the button clicked in React.js 
+ * Downloads and processes media files based the button clicked in React.js
  *
  * @param fileTypeToDownload - The type of media to download (e.g., "audio-m4a", "360p", "720p", "1080p").
  * @param url - The URL of the media resource to download.
@@ -70,7 +75,7 @@ export const downloadFile = async (
 
     // 360p videos have audio and video combined, so only need to download video
     else if (fileTypeToDownload === "360p") {
-      await saveVideoInDirectory(url, title, 137);
+      await saveVideoInDirectory(url, title, 18);
     }
 
     // Higher resolutions need to download audio/video and merge them
@@ -101,6 +106,14 @@ export const downloadFile = async (
  */
 export const combineAudioVideo = async (title: string): Promise<void> => {
   return new Promise((resolve, reject) => {
+
+    const filePath = `./downloads/output/${title}.mp4`;
+    if (fs.existsSync(filePath)) {
+      console.log(`File already exists. (Skipping audio/video merging)`);
+      resolve();
+      return;
+    }
+
     const audioFile = `./downloads/input_audio/${title}.m4a`;
     const videoFile = `./downloads/input_video/${title}.mp4`;
     const outputVideoFile = `./downloads/output/${title}.mp4`;
@@ -140,8 +153,14 @@ export const saveAudioInDirectory = async (
 ): Promise<void> => {
   return new Promise(async (resolve, reject) => {
     try {
+      const filePath = `./downloads/input_audio/${title}.m4a`;
+      if (fs.existsSync(filePath)) {
+        console.log(`File already exists skipping audio download`);
+        resolve();
+        return;
+      } 
       ytdl(url, { filter: "audioonly" })
-        .pipe(fs.createWriteStream(`./downloads/input_audio/${title}.m4a`))
+        .pipe(fs.createWriteStream(filePath))
         .on("error", (err) => console.error(err))
         .on("finish", () => resolve()); // Resolve promise
     } catch (err) {
@@ -167,12 +186,17 @@ export const saveVideoInDirectory = async (
 ): Promise<void> => {
   return new Promise(async (resolve, reject) => {
     try {
+      const filePath = `./downloads/input_video/${title}.mp4`;
+
+      if (fs.existsSync(filePath)) {
+        console.log(`File already exists, skipping video download`);
+        resolve();
+        return;
+      }
       const info = await ytdl.getInfo(url);
       const choosenFormat = info.formats.find((format) => format.itag === itag);
       const videoStream = ytdl(url, { format: choosenFormat });
-      const writeStream = fs.createWriteStream(
-        `./downloads/input_video/${title}.mp4`
-      );
+      const writeStream = fs.createWriteStream(filePath);
 
       videoStream
         .pipe(writeStream)
@@ -189,7 +213,7 @@ export const saveVideoInDirectory = async (
           */
           setTimeout(() => {
             resolve(); // Resolve promise when download is finished
-          }, 2000); 
+          }, 2000);
         });
     } catch (err) {
       console.error(err);
