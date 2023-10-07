@@ -19,7 +19,7 @@ Clone the project
 Go into directory, install dependencies in Node.js and Start Server
 
 ```bash
-  cd YouTubeDownloader/backend && npm install && npm run start
+  cd YouTube-downloader/backend && npm install && npm run start
 ```
 
 Open a new terminal, install dependencies in React.js and start server
