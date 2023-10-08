@@ -36,7 +36,17 @@ Open a new terminal, install dependencies in React.js and start server
   cd ../frontend && npm install && npm run build && npm start
 ```
 
+## Acknowledgements
 
+ - [YouTube Video (Copyright free)](https://www.youtube.com/watch?v=W6Wzk7VuC00)
+ - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
+
+
+## Roadmap
+
+- Additional browser support
+
+- Add more integrations
 
 ## Authors
 
