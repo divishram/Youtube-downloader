@@ -1,7 +1,7 @@
 
 # YouTube Downloader
 
-An example of a YT Downloader site built with Node.js, Express, React.js Socket.io. This site focuses on a mobile-first design.
+An example of a YT Downloader site built with Node.js, Express, React.js Socket.io. This site focuses on a mobile-first design approach.
 
 
 ## Demo
