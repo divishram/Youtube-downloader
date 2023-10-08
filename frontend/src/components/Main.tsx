@@ -42,7 +42,6 @@ export default function MainPart() {
     };
   }, [url]);
 
-  // todo combine in 1st one
   useEffect(() => {
     socket.on("video-info", (data) => {
       console.log(data);
@@ -82,47 +81,7 @@ export default function MainPart() {
       </main>
 
       <VideoContent data={dataToPass}></VideoContent>
-      {/* {videoInfo && <VideoFormats formats={videoInfo.formats} />} */}
-
-      {/* <p>{videoInfo?.title}</p> */}
-      {/* <p>{videoInfo?.duration} seconds</p> */}
-
-      {/* {videoInfo?.videoId && (
-        <img
-          src={`https://img.youtube.com/vi/${videoInfo?.videoId}/sddefault.jpg`}
-          height={150}
-          alt=""
-        />
-      )} */}
       <Table data={dataToPass}></Table>
     </div>
   );
 }
-
-function VideoFormats(props: { formats: Format[] }) {
-  return (
-    <ul>
-      {props.formats.map((format) => (
-        <>
-          <li key={1}>{format.mimeType}</li>
-          <li key={2}>{format.quality}</li>
-          <li key={3}>{format.size} Bytes</li>
-        </>
-      ))}
-    </ul>
-  );
-}
-
-// todo share interface for both backend and frontend
-
-/*
-
-Steps: 
-1. User enters URL, onchange event 
-2. Socket sends info to server
-3. Socket on server get info
-4. Uses API to download mp3/mp4 etc.
-5. Send data back to front end
-6. Show loading on frontend
-7. Show options form to select video quality/audio format
-*/
