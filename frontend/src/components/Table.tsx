@@ -1,6 +1,5 @@
 import React from "react";
 import { socket } from "../socket";
-import formatTime from "../utils/ConvertTime";
 import DownloadBtn from "./DownloadBtn.svg";
 
 interface VideoContentProps {
@@ -11,7 +10,6 @@ interface VideoContentProps {
     url: string;
   };
 }
-// todo data should be sent from server here, then object or array should be iterated to populate table
 export default function Table(props: VideoContentProps) {
   const download = (e: any) => {
     console.log("downloading!");
@@ -24,6 +22,7 @@ export default function Table(props: VideoContentProps) {
     }
   };
 
+  // todo maybe loop through data to make table cleaner?
   return (
     <div className="table-responsive">
       {props.data.duration && (
@@ -56,7 +55,12 @@ export default function Table(props: VideoContentProps) {
               <td>.mp4</td>
               <td>360p</td>
               <td className="360p">
-                <img className="download-btn" src={DownloadBtn} alt="Download Button" onClick={download} />
+                <img
+                  className="download-btn"
+                  src={DownloadBtn}
+                  alt="Download Button"
+                  onClick={download}
+                />
               </td>
             </tr>
 
@@ -64,7 +68,12 @@ export default function Table(props: VideoContentProps) {
               <td>.mp4</td>
               <td>720p</td>
               <td className="720p">
-                <img className="download-btn" src={DownloadBtn} alt="Download Button" onClick={download} />
+                <img
+                  className="download-btn"
+                  src={DownloadBtn}
+                  alt="Download Button"
+                  onClick={download}
+                />
               </td>
             </tr>
 
@@ -72,11 +81,14 @@ export default function Table(props: VideoContentProps) {
               <td>.mp4</td>
               <td>1080p</td>
               <td className="1080p">
-                <img className="download-btn" src={DownloadBtn} alt="Download Button" onClick={download} />
+                <img
+                  className="download-btn"
+                  src={DownloadBtn}
+                  alt="Download Button"
+                  onClick={download}
+                />
               </td>
             </tr>
-
-
           </tbody>
         </table>
       )}
