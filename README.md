@@ -38,6 +38,7 @@ Open a new terminal, install dependencies in React.js and start server
 ## Roadmap
 
 - Debounce function to improve performance
+- Unit Testing
 - Add CSS media queries for tablet and desktop view
 - 4K videos
 - Download an entire playlist
