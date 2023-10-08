@@ -1,8 +1,7 @@
 
 # YouTube Downloader
 
-An example of a YT Downloader site built with Node.js, Express, React.js Socket.io
-
+An example of a YT Downloader site built with Node.js, Express, React.js Socket.io. This site focuses on a mobile-first design.
 
 
 ## Demo
@@ -36,17 +35,13 @@ Open a new terminal, install dependencies in React.js and start server
   cd ../frontend && npm install && npm run build && npm start
 ```
 
-## Acknowledgements
-
- - [YouTube Video (Copyright free)](https://www.youtube.com/watch?v=W6Wzk7VuC00)
- - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
-
-
 ## Roadmap
 
-- Additional browser support
-
-- Add more integrations
+- Debounce function to improve performance
+- Add CSS media queries for tablet and desktop view
+- 4K videos
+- Download an entire playlist
+- Rename video before downloading (So many music videos have extra space, credits etc.)
 
 ## Authors
 
@@ -57,3 +52,7 @@ Open a new terminal, install dependencies in React.js and start server
 
 [MIT](https://choosealicense.com/licenses/mit/)
 
+## Acknowledgements
+
+ - [YouTube Video (Copyright free)](https://www.youtube.com/watch?v=W6Wzk7VuC00)
+ - [How to write a Good readme](https://bulldogjob.com/news/449-how-to-write-a-good-readme-for-your-github-project)
