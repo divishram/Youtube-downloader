@@ -3,7 +3,7 @@ import { socket } from "../socket";
 import { io } from "socket.io-client";
 import VideoContent from "./VideoContent";
 import Table from "./Table";
-// todo add debounce function to prevent too many re-renders
+import debounce from "../utils/Debounce";
 
 interface VideoInfo {
   title: string;
@@ -21,6 +21,8 @@ interface Format {
 export default function MainPart() {
   const [url, setUrl] = useState<string>("");
   const [videoInfo, setVideoInfo] = useState<VideoInfo>();
+  const debouncedSetUrl = React.useCallback(debounce(() => setUrl(""), 40), []);
+  const debouncedUpdateUrl = React.useCallback(debounce((e) => setUrl(e), 20), []);
   
   useEffect(() => {
     const socket = io("http://localhost:4000");
@@ -51,7 +53,7 @@ export default function MainPart() {
       socket.off("video-info");
     };
   });
-  console.log(videoInfo);
+  // console.log(videoInfo);
 
   const dataToPass = {
     img: videoInfo?.videoId ?? "",
@@ -72,10 +74,9 @@ export default function MainPart() {
           autoFocus
           placeholder="Enter YouTube URL"
           value={url}
-          onClick={() => setUrl("")}
+          onClick={() => debouncedSetUrl()}
           onChange={(e) => {
-            setUrl(e.target.value);
-            console.log(e.target.value);
+            debouncedUpdateUrl(e.target.value);
           }}
         />
       </main>
